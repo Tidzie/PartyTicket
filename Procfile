@@ -1,1 +1,1 @@
-web: gunicorn weekend_events.wsgi --log-file -
+web: gunicorn weekend_events.wsgi
