@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Location - Weekend 🌟 Events{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+<style>
+.location-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.location-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1565c0;
+    margin-bottom: 0.5rem;
+}
+
+.location-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+#map {
+    height: 70vh;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 100%;
+}
+
+.location-error {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 2rem;
+    text-align: center;
+    color: #d32f2f;
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .location-title {
+        font-size: 1.5rem;
+    }
+    .location-subtitle {
+        font-size: 1rem;
+    }
+    #map {
+        height: 60vh;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="location-header">
+    <h1 class="location-title">📍 Directions from Kuwazana Phase 3 to Greystone Park</h1>
+    <p class="location-subtitle">Live location and route from Kuwazana Phase 3 8428 to Greystone Park.</p>
+</div>
+
+<div id="map"></div>
+
+<div id="location-error" class="location-error">
+    <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+    <h4>Unable to Access Location</h4>
+    <p id="error-message">Please allow location access to view your position on the map.</p>
+</div>
+
+{% if not user.is_authenticated %}
+<div class="location-header mt-4">
+    <h2>Join Weekend 🌟 Events</h2>
+    <p>Sign up to access exclusive events and features near you.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+        </a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-user-plus"></i> Register
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mapElement = document.getElementById('map');
+    const errorElement = document.getElementById('location-error');
+    const errorMessage = document.getElementById('error-message');
+
+    const startAddress = 'Kuwazana Phase 3 8428, South Africa';
+    const endAddress = 'Greystone Park, South Africa';
+
+    // Geocode addresses
+    Promise.all([
+        geocodeAddress(startAddress),
+        geocodeAddress(endAddress)
+    ]).then(([startCoords, endCoords]) => {
+        if (!startCoords || !endCoords) {
+            showError('Unable to geocode addresses.');
+            return;
+        }
+
+        const map = L.map('map').setView([(startCoords.lat + endCoords.lat) / 2, (startCoords.lon + endCoords.lon) / 2], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add markers
+        const startMarker = L.marker([startCoords.lat, startCoords.lon]).addTo(map).bindPopup('Start: Kuwazana Phase 3 8428');
+        const endMarker = L.marker([endCoords.lat, endCoords.lon]).addTo(map).bindPopup('Destination: Greystone Park');
+
+        // Add routing
+        L.Routing.control({
+            waypoints: [
+                L.latLng(startCoords.lat, startCoords.lon),
+                L.latLng(endCoords.lat, endCoords.lon)
+            ],
+            routeWhileDragging: false,
+            createMarker: function() { return null; } // Don't create additional markers
+        }).addTo(map);
+
+        // Live location
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(function(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // Add or update user marker
+                if (window.userMarker) {
+                    window.userMarker.setLatLng([userLat, userLng]);
+                } else {
+                    window.userMarker = L.marker([userLat, userLng], {
+                        icon: L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+                            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        })
+                    }).addTo(map).bindPopup('Your live location');
+                }
+            }, function(err) {
+                console.log('Geolocation error:', err);
+            }, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            });
+        }
+    }).catch(err => {
+        showError('Error loading map: ' + err.message);
+    });
+
+    function geocodeAddress(address) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+                }
+                return null;
+            });
+    }
+
+    function showError(message) {
+        mapElement.style.display = 'none';
+        errorElement.style.display = 'block';
+        errorMessage.textContent = message;
+    }
+});
+</script>
+{% endblock %}

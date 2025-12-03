@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Send Message - Weekend 🌟 Events{% endblock %}
+
+{% block content %}
+<h2>Send Message</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="{{ form.content.id_for_label }}" class="form-label">Message Content</label>
+        {{ form.content }}
+    </div>
+    <div class="mb-3">
+        <label for="{{ form.is_broadcast.id_for_label }}" class="form-label">{{ form.is_broadcast.label }}</label>
+        {{ form.is_broadcast }}
+    </div>
+    <div class="mb-3" id="target_users_div">
+        <label for="{{ form.target_users.id_for_label }}" class="form-label">{{ form.target_users.label }}</label>
+        {{ form.target_users }}
+    </div>
+    <button type="submit" class="btn btn-primary">Send Message</button>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const broadcastCheckbox = document.getElementById('{{ form.is_broadcast.id_for_label }}');
+    const targetUsersDiv = document.getElementById('target_users_div');
+
+    broadcastCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            targetUsersDiv.style.display = 'none';
+        } else {
+            targetUsersDiv.style.display = 'block';
+        }
+    });
+});
+</script>
+{% endblock %}

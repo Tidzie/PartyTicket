@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Weekend 🌟 Events{% endblock %}
+
+{% block content %}
+<style>
+/* Custom gradient background */
+.home-bg {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.home-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Hero section */
+.hero-section {
+    padding: 4rem 0 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #1565c0, #42a5f5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: #424242;
+    margin-bottom: 3rem;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+/* Next event card */
+.next-event-card {
+    max-width: 600px;
+    margin: 0 auto 4rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    animation: fadeInUp 1.4s ease-out;
+}
+
+.next-event-card .card-body {
+    padding: 2.5rem;
+}
+
+.event-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1565c0;
+    margin-bottom: 1rem;
+}
+
+.event-details {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.event-details p {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.event-details i {
+    margin-right: 0.5rem;
+    color: #42a5f5;
+}
+
+/* Navigation cards */
+.nav-section {
+    padding: 2rem 0 4rem;
+    position: relative;
+    z-index: 1;
+}
+
+.nav-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.nav-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    animation: fadeInUp 1.6s ease-out;
+}
+
+.nav-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.nav-card .card-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+.nav-icon {
+    font-size: 3rem;
+    color: #42a5f5;
+    margin-bottom: 1rem;
+}
+
+.nav-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1565c0;
+    margin-bottom: 0.5rem;
+}
+
+.nav-description {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Footer */
+.home-footer {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 2rem 0;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.contact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.contact-btn.call {
+    background: linear-gradient(45deg, #4caf50, #66bb6a);
+    color: white;
+}
+
+.contact-btn.call:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(76, 175, 80, 0.3);
+}
+
+.contact-btn.whatsapp {
+    background: linear-gradient(45deg, #25d366, #128c7e);
+    color: white;
+}
+
+.contact-btn.whatsapp:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(37, 211, 102, 0.3);
+}
+
+.copyright {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .next-event-card .card-body {
+        padding: 2rem;
+    }
+
+    .nav-cards {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .contact-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+
+<div class="home-bg">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Follow the Weekend 🌟</h1>
+            <p class="hero-subtitle">Exclusive Parties, Events & Access — Securely Managed</p>
+
+            {% if next_event %}
+            <div class="next-event-card card">
+                <div class="card-body">
+                    <h3 class="event-title">{{ next_event.title }}</h3>
+                    <div class="event-details">
+                        <p><i class="fas fa-calendar-alt"></i> {{ next_event.date|date:"l, F j, Y" }}</p>
+                        <p><i class="fas fa-clock"></i> {{ next_event.time|time:"g:i A" }}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> {{ next_event.venue }}</p>
+                    </div>
+                    <a href="{% url 'events:list' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-eye"></i> View Event
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="next-event-card card">
+                <div class="card-body">
+                    <h3 class="event-title">No Upcoming Events</h3>
+                    <p class="text-muted">Check back soon for new events!</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    {% if user.is_authenticated %}
+    <!-- Navigation Cards Section -->
+    <section class="nav-section">
+        <div class="container">
+            <div class="nav-cards">
+                <a href="{% url 'events:list' %}" class="nav-card card">
+                    <div class="card-body">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h5 class="nav-title">Events</h5>
+                        <p class="nav-description">Browse and view all upcoming events</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'messaging:list' %}" class="nav-card card">
+                    <div class="card-body">
+                        <div class="nav-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h5 class="nav-title">Messages</h5>
+                        <p class="nav-description">Check messages from administrators</p>
+                    </div>
+                </a>
+
+                {% if user.role == 'admin' %}
+                <a href="{% url 'attendance:list' %}" class="nav-card card">
+                    <div class="card-body">
+                        <div class="nav-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h5 class="nav-title">Attendance</h5>
+                        <p class="nav-description">View attendance logs and analytics</p>
+                    </div>
+                </a>
+                {% endif %}
+
+                <a href="{% url 'core:contact' %}" class="nav-card card">
+                    <div class="card-body">
+                        <div class="nav-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h5 class="nav-title">Support</h5>
+                        <p class="nav-description">Get help and support from our team</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+    {% else %}
+    <!-- Public Landing Section -->
+    <section class="nav-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="nav-card card mb-4">
+                        <div class="card-body">
+                            <div class="nav-icon mb-3">
+                                <i class="fas fa-star fa-4x" style="color: #42a5f5;"></i>
+                            </div>
+                            <h3 class="nav-title mb-3">Welcome to Weekend 🌟 Events</h3>
+                            <p class="nav-description mb-4">
+                                Discover exclusive parties, events, and access to the best weekend experiences.
+                                Our platform securely manages event invitations, attendance tracking, and messaging
+                                for a seamless experience. Join our community of event enthusiasts and never miss
+                                out on the fun!
+                            </p>
+                            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt"></i> Sign In
+                                </a>
+                                <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg">
+                                    <i class="fas fa-user-plus"></i> Register
+                                </a>
+                                <a href="{% url 'core:my_location' %}" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-map-marker-alt"></i> View Map
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="home-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="contact-buttons">
+                    <a href="tel:+263780639046" class="contact-btn call">
+                        <i class="fas fa-phone"></i>
+                        Call Support
+                    </a>
+                    <a href="https://wa.me/263780639046" class="contact-btn whatsapp" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        WhatsApp Us
+                    </a>
+                </div>
+                <p class="copyright">
+                    © 2025 Weekend 🌟 Events. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

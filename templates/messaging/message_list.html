@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Messages - Weekend 🌟 Events{% endblock %}
+
+{% block content %}
+<h2>Messages</h2>
+<div class="row">
+    {% for message in messages %}
+    <div class="col-md-12 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-text">{{ message.content }}</p>
+                <p class="card-text"><small class="text-muted">{{ message.created_at }}</small></p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No messages.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Events - Weekend 🌟 Events{% endblock %}
+
+{% block content %}
+<h2>Events</h2>
+<div class="row">
+    {% for event in events %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ event.title }}</h5>
+                <p class="card-text">{{ event.description }}</p>
+                <p class="card-text"><small class="text-muted">{{ event.date }} at {{ event.time }} - {{ event.venue }}</small></p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No events available.</p>
+    {% endfor %}
+</div>
+{% endblock %}
